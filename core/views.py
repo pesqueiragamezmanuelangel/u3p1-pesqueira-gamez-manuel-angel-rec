@@ -82,3 +82,18 @@ def editar_servicio(request, pk):
         form = ServicioForm(instance=servicio)
     # render: reutiliza servicio_form.html con el título "Editar servicio"
     return render(request, 'core/servicio_form.html', {'form': form, 'titulo_pagina': 'Editar servicio'})
+
+# @login_required: solo usuarios con sesión iniciada pueden borrar
+@login_required
+# eliminar_servicio: recibe el pk (id) desde la URL /servicios/<pk>/eliminar/
+def eliminar_servicio(request, pk):
+    # busca el registro exacto a borrar, igual que en editar_servicio
+    servicio = get_object_or_404(Servicio, pk=pk)
+    # solo se borra si llega un POST (el botón de confirmar), nunca con un simple GET
+    if request.method == 'POST':
+        # delete(): borra la fila de MySQL de verdad
+        servicio.delete()
+        # redirect: regresa al listado, ya sin el registro borrado
+        return redirect('servicios')
+    # si es GET, solo muestra la pantalla de "¿Seguro?"; todavía no borra nada
+    return render(request, 'core/servicio_confirm_delete.html', {'servicio': servicio})
