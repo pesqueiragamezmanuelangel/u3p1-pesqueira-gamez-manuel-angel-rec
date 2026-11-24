@@ -1,15 +1,20 @@
-# render: función que combina una plantilla con datos y arma la respuesta HTTP
-from django.shortcuts import render
-# connection: objeto de Django que expone la configuración de la base de datos activa
+# render: junta una plantilla con datos · redirect: manda al navegador a otra URL · get_object_or_404: busca un registro o responde 404
+from django.shortcuts import render, redirect, get_object_or_404
+# connection: datos de la conexión a la base (lo usa la vista "inicio" de la Semana 3)
 from django.db import connection
+# login_required: decorador que exige sesión iniciada antes de entrar a la vista
+from django.contrib.auth.decorators import login_required
+# Servicio: el modelo de la Semana 4, importado desde este mismo directorio
 from .models import Servicio
+# ServicioForm: el ModelForm que creaste en el paso 01
+from .forms import ServicioForm
 
 
-# def: toda vista es una función que recibe "request" (la petición del navegador)
+# inicio: la vista de la Semana 3 que muestra a qué base estás conectado (no cambia)
 def inicio(request):
-    # settings_dict: diccionario interno con ENGINE, HOST, NAME, etc. de la conexión activa
+    # settings_dict: diccionario con ENGINE, HOST, NAME, etc. de la conexión activa
     info_bd = connection.settings_dict
-    # contexto: los datos que la plantilla va a poder usar con {{ variable }}
+    # contexto: los datos que la plantilla podrá usar
     contexto = {
         # motor: el tipo de base de datos (debe decir mysql)
         'motor': info_bd['ENGINE'],
@@ -17,13 +22,39 @@ def inicio(request):
         'host': info_bd['HOST'],
     # cierre del diccionario contexto
     }
-    # render: junta el template "core/inicio.html" con el contexto y devuelve el HTML final
+    # render: junta inicio.html con el contexto y devuelve la página
     return render(request, 'core/inicio.html', contexto)
 
 
-# servicios: la vista que responde en /servicios/
+# servicios: la vista del listado de la Semana 4 (no cambia)
 def servicios(request):
-    # .objects.all(): pide TODOS los servicios a MySQL (Django lo traduce a SELECT * FROM core_servicio)
+    # .objects.all(): pide TODOS los servicios a MySQL
     lista_servicios = Servicio.objects.all()
-    # entrega la lista a la plantilla con el nombre "servicios", igual que en la Semana 3
+    # entrega la lista a la plantilla con el nombre "servicios"
     return render(request, 'core/servicios.html', {'servicios': lista_servicios})
+
+
+# @login_required: si nadie inició sesión, Django lo manda a LOGIN_URL (el login de /admin)
+@login_required
+# crear_servicio: la vista que atiende /servicios/nuevo/
+def crear_servicio(request):
+    # request.method: distingue si el navegador pide el formulario (GET) o lo está enviando (POST)
+    if request.method == 'POST':
+        # ServicioForm(request.POST): reconstruye el formulario con los datos que el usuario tecleó
+        form = ServicioForm(request.POST)
+        # is_valid(): corre todas las validaciones del modelo (tipos, max_length, campos obligatorios)
+        if form.is_valid():
+            # commit=False: crea el objeto Servicio en memoria SIN guardarlo todavía en MySQL
+            nuevo = form.save(commit=False)
+            # propietario: se asigna aquí, no en el formulario, para que nadie pueda falsificarlo
+            nuevo.propietario = request.user
+            # save(): ahora sí guarda el registro completo en MySQL
+            nuevo.save()
+            # redirect('servicios'): evita reenvíos duplicados si el usuario recarga la página
+            return redirect('servicios')
+    # si no es POST, es GET: el usuario apenas abrió la página
+    else:
+        # ServicioForm() sin datos: formulario vacío
+        form = ServicioForm()
+    # render: dibuja la plantilla, pasándole el formulario (vacío o con errores)
+    return render(request, 'core/servicio_form.html', {'form': form, 'titulo_pagina': 'Nuevo servicio'})
