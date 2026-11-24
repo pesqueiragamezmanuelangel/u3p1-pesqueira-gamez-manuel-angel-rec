@@ -1,5 +1,5 @@
 <!-- título del repo: cambia por tus nombres reales -->
-# U2p3 — Pesqueira Gamez Manuel Angel
+# U3p1 — Pesqueira Gamez Manuel Angel
 
 <!-- sección con los pasos para correr el proyecto en otra computadora -->
 ## Cómo correrlo localmente
@@ -22,12 +22,12 @@ Se evidencio que la aplicacion esta corriendo de manera local, la base de datos 
 <!-- sección con la URL pública de Render -->
 ## Demo en vivo (producción)
 <!-- tu dirección real de Render -->
-https://u2p3-pesqueira-gamez-manuel-angel-rec.onrender.com/
+https://u3p1-pesqueira-gamez-manuel-angel-rec.onrender.com/
 
 <!-- sección con la URL del panel de administración -->
 ## Panel de administración
 <!-- misma dirección + /admin -->
-https://u2p3-pesqueira-gamez-manuel-angel-rec.onrender.com/admin/
+https://u3p1-pesqueira-gamez-manuel-angel-rec.onrender.com/admin/
 
 <!-- resumen de lo que hiciste esta semana -->
 ## Semana 4 — Modelos y despliegue dinámico
@@ -35,3 +35,10 @@ https://u2p3-pesqueira-gamez-manuel-angel-rec.onrender.com/admin/
 Modelo Servicio migrado a MySQL, Web Service publicado en Render,
 <!-- segunda línea del resumen -->
 5 registros reales cargados desde /admin.
+
+<!-- ## : subtítulo con lo que se hizo esta semana -->
+## Semana 5 — CRUD completo con ModelForms
+<!-- primera línea de la descripción de la práctica -->
+Crear, editar y eliminar un Servicio desde pantallas propias
+<!-- segunda línea de la descripción de la práctica -->
+(sin usar /admin), con validacion personalizada en el precio.
